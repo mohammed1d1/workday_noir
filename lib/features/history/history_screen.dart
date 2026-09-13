@@ -1,0 +1,8 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../../data/models/work_entry.dart';
+import '../../data/repositories/workday_repository.dart';
+import '../../shared/widgets/noir_card.dart';
+
+class HistoryScreen extends ConsumerWidget { const HistoryScreen({super.key}); @override Widget build(BuildContext context,WidgetRef ref){ final p=ref.watch(entriesProvider); return CupertinoPageScaffold(navigationBar:const CupertinoNavigationBar(largeTitle:Text('History'),automaticallyImplyLeading:false),child:SafeArea(child:p.when(loading:()=>const Center(child:CupertinoActivityIndicator()),error:(_,__)=>const Center(child:Text('Something went wrong.')),data:(entries){if(entries.isEmpty)return const Center(child:Text('No workdays recorded yet.')); return ListView.builder(padding:const EdgeInsets.all(20),itemCount:entries.length,itemBuilder:(_,i){final e=entries[i];final dt=DateTime.parse(e.date);return Padding(padding:const EdgeInsets.only(bottom:10),child:NoirCard(padding:const EdgeInsets.symmetric(horizontal:18,vertical:16),child:Row(children:[Icon(e.status==WorkStatus.worked?CupertinoIcons.check_mark:CupertinoIcons.xmark,size:18),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(DateFormat('dd/MM').format(dt),style:const TextStyle(fontWeight:FontWeight.w700)),Text(e.status==WorkStatus.worked?'Worked':"Didn't work",style:const TextStyle(color:CupertinoColors.systemGrey)),if(e.note?.isNotEmpty==true)Text(e.note!,maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(color:CupertinoColors.systemGrey2))]))])));});}})); } }

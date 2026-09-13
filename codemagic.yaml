@@ -1,0 +1,71 @@
+workflows:
+  ios_unsigned:
+    name: Workday Noir - iOS CI (unsigned)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    scripts:
+      - name: Prepare Flutter iOS/Android platforms
+        script: ./tool/codemagic_prepare.sh
+      - name: Flutter packages
+        script: flutter pub get
+      - name: Static analysis
+        script: flutter analyze
+      - name: Unit tests
+        script: flutter test
+      - name: Install CocoaPods dependencies
+        script: cd ios && pod install --repo-update
+      - name: Build iOS release without signing
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/Runner.app
+      - /tmp/xcodebuild_logs/*.log
+
+  ios_release:
+    name: Workday Noir - iOS Release
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: workday_noir_app_store_connect
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.workdaynoir.app
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    scripts:
+      - name: Prepare Flutter iOS/Android platforms
+        script: ./tool/codemagic_prepare.sh
+      - name: Flutter packages
+        script: flutter pub get
+      - name: Static analysis
+        script: flutter analyze
+      - name: Unit tests
+        script: flutter test
+      - name: Install CocoaPods dependencies
+        script: cd ios && pod install --repo-update
+      - name: Apply Codemagic signing profiles
+        script: xcode-project use-profiles
+      - name: Build IPA
+        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/archive/*.xcarchive
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: false
+        submit_to_app_store: false

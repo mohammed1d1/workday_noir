@@ -1,0 +1,27 @@
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Generated native platform artifacts (safe to regenerate by Codemagic)
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+android/.gradle/
+android/local.properties
+
+# Secrets
+*.p8
+*.p12
+*.mobileprovision
+.env
+.env.*
