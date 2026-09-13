@@ -1,30 +1,51 @@
 name: workday_noir
-description: A premium offline-first personal workday tracker.
+description: "Workday Noir — a premium, offline-first work-day tracker for iOS."
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
-  flutter: '>=3.35.0'
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
     sdk: flutter
+
+  # Local SQLite persistence — reliable, native, well-maintained.
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+
+  # Onboarding flag + reminder preferences (simple key/value, no need for a full DB).
+  shared_preferences: ^2.3.2
+
+  # Native iOS Share Sheet for the Export feature.
+  share_plus: ^10.0.2
+
+  # Local (on-device) daily reminder notifications — no server required.
+  flutter_local_notifications: ^17.2.3
+  # Required by flutter_local_notifications to schedule a notification that
+  # repeats at a fixed local time every day (zonedSchedule).
+  timezone: ^0.9.4
+  # Reads the device's actual IANA timezone name so the daily reminder
+  # fires at the wall-clock time the user picked, not UTC.
+  flutter_timezone: ^3.0.1
+
   cupertino_icons: ^1.0.8
-  flutter_riverpod: ^2.6.1
-  sqflite: ^2.4.2
-  path: ^1.9.1
-  path_provider: ^2.1.5
-  intl: ^0.20.2
-  share_plus: ^11.0.0
-  flutter_local_notifications: ^19.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  integration_test:
-    sdk: flutter
-  flutter_lints: ^6.0.0
+
+  # In-memory sqflite implementation so storage logic can be unit tested
+  # with `flutter test` (no device/simulator required).
+  sqflite_common_ffi: ^2.3.3
+
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
+
+  # Note: assets/icon/icon_1024.png is a *design reference* for generating
+  # the iOS AppIcon.appiconset (see ios_setup/README_IOS_SETUP.md) — it is
+  # not loaded at runtime, so it's intentionally not declared as a Flutter
+  # asset here.

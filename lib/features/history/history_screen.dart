@@ -1,93 +1,100 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
-import '../../data/models/work_entry.dart';
-import '../../data/repositories/workday_repository.dart';
-import '../../shared/widgets/noir_card.dart';
+import '../../app/theme/noir_theme.dart';
+import '../../services/export_service.dart';
+import '../../services/work_entries_controller.dart';
+import '../../widgets/month_section.dart';
 
-class HistoryScreen extends ConsumerWidget {
-  const HistoryScreen({super.key});
+/// Work history grouped by month, most recent month first. Tapping any
+/// day toggles its status in place (no duplicate entries are ever
+/// created — see [WorkEntriesController.setDay]).
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key, required this.controller});
+
+  final WorkEntriesController controller;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final entries = ref.watch(entriesProvider);
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (BuildContext context, Widget? child) {
+        if (controller.isLoading) {
+          return const SizedBox.shrink();
+        }
 
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('History'),
-        automaticallyImplyLeading: false,
-      ),
-      child: SafeArea(
-        child: entries.when(
-          loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (_, _) => const Center(child: Text('Something went wrong.')),
-          data: (items) {
-            if (items.isEmpty) {
-              return const Center(
-                child: Text('No workdays recorded yet.'),
-              );
-            }
+        final List<MonthGroup> months = controller.groupedByMonth;
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final entry = items[index];
-                final date = DateTime.parse(entry.date);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: NoirCard(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 16,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          entry.status == WorkStatus.worked
-                              ? CupertinoIcons.check_mark
-                              : CupertinoIcons.xmark,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                DateFormat('dd/MM').format(date),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Text(
-                                entry.status == WorkStatus.worked
-                                    ? 'Worked'
-                                    : "Didn't work",
-                                style: const TextStyle(
-                                  color: CupertinoColors.systemGrey,
-                                ),
-                              ),
-                              if (entry.note?.isNotEmpty == true)
-                                Text(
-                                  entry.note!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: CupertinoColors.systemGrey2,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
+        return CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              pinned: false,
+              floating: true,
+              title: const Text('History'),
+              actions: <Widget>[
+                if (months.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Center(
+                      child: Text(
+                        '${controller.totalWorkedDaysOverall} total',
+                        style: NoirTypography.caption,
+                      ),
                     ),
                   ),
-                );
-              },
-            );
-          },
+              ],
+            ),
+            if (months.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: const _EmptyHistory(),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return MonthSection(
+                        group: months[index],
+                        onToggleEntry: (DateTime date, bool worked) {
+                          controller.setDay(date: date, worked: worked);
+                        },
+                      );
+                    },
+                    childCount: months.length,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _EmptyHistory extends StatelessWidget {
+  const _EmptyHistory();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              'No workdays yet.',
+              style: NoirTypography.body,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Start by answering today\'s question.',
+              style: NoirTypography.secondary,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

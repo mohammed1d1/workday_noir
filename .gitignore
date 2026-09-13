@@ -1,27 +1,30 @@
-# Flutter
+# Flutter/Dart
 .dart_tool/
+.packages
+build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
 .pub-cache/
-build/
-coverage/
+.pub/
+pubspec.lock
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/App.framework
+ios/Flutter/flutter_assets/
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
 
 # IDE
 .idea/
 .vscode/
 *.iml
-
-# Generated native platform artifacts (safe to regenerate by Codemagic)
-ios/Pods/
-ios/.symlinks/
-ios/Flutter/ephemeral/
-android/.gradle/
-android/local.properties
-
-# Secrets
-*.p8
-*.p12
-*.mobileprovision
-.env
-.env.*
