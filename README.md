@@ -38,7 +38,7 @@ Create an App Store Connect integration in Codemagic and either name it exactly 
 
 ### Important
 
-The current source package intentionally does **not** contain generated Xcode project files. That is why the Codemagic preparation script runs `flutter create --platforms=ios,android .` before the build. This prevents the previous `Application not configured for iOS` failure on CI.
+The repository keeps the generated iOS/Android platform projects reproducible in CI; Codemagic generates or refreshes them before analysis/build. That is why the Codemagic preparation script runs `flutter create --platforms=ios,android .` before the build. This prevents the previous `Application not configured for iOS` failure on CI and normalizes the iOS bundle identifier to `com.workdaynoir.app`.
 
 For a normal developer machine:
 

@@ -2,7 +2,7 @@ workflows:
   ios_unsigned:
     name: Workday Noir - iOS CI (unsigned)
     instance_type: mac_mini_m2
-    max_build_duration: 60
+    max_build_duration: 120
     environment:
       flutter: stable
       xcode: latest
@@ -21,17 +21,17 @@ workflows:
       - name: Unit tests
         script: flutter test
       - name: Install CocoaPods dependencies
-        script: cd ios && pod install --repo-update
+        script: find . -name "Podfile" -execdir pod install \;
       - name: Build iOS release without signing
         script: flutter build ios --release --no-codesign
     artifacts:
-      - build/ios/iphoneos/Runner.app
+      - build/ios/iphoneos/**/*.app
       - /tmp/xcodebuild_logs/*.log
 
   ios_release:
     name: Workday Noir - iOS Release
     instance_type: mac_mini_m2
-    max_build_duration: 60
+    max_build_duration: 120
     integrations:
       app_store_connect: workday_noir_app_store_connect
     environment:
@@ -55,14 +55,15 @@ workflows:
       - name: Unit tests
         script: flutter test
       - name: Install CocoaPods dependencies
-        script: cd ios && pod install --repo-update
-      - name: Apply Codemagic signing profiles
+        script: find . -name "Podfile" -execdir pod install \;
+      - name: Set up iOS signing
         script: xcode-project use-profiles
       - name: Build IPA
-        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
-      - build/ios/archive/*.xcarchive
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:

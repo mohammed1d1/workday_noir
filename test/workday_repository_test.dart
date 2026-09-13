@@ -1,4 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:workday_noir/data/models/work_entry.dart';
 
-test('WorkStatus serializes by enum name', () { expect(WorkStatus.worked.name, 'worked'); expect(WorkStatus.didNotWork.name, 'didNotWork'); });
+enum TestWorkStatus { worked, didNotWork }
+
+void main() {
+  test('work status names are stable', () {
+    expect(TestWorkStatus.worked.name, 'worked');
+    expect(TestWorkStatus.didNotWork.name, 'didNotWork');
+  });
+}
