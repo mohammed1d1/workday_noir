@@ -13,7 +13,7 @@ workflows:
         - $HOME/Library/Caches/CocoaPods
     scripts:
       - name: Prepare Flutter iOS/Android platforms
-        script: ./tool/codemagic_prepare.sh
+        script: bash ./tool/codemagic_prepare.sh
       - name: Flutter packages
         script: flutter pub get
       - name: Static analysis
@@ -47,7 +47,7 @@ workflows:
         - $HOME/Library/Caches/CocoaPods
     scripts:
       - name: Prepare Flutter iOS/Android platforms
-        script: ./tool/codemagic_prepare.sh
+        script: bash ./tool/codemagic_prepare.sh
       - name: Flutter packages
         script: flutter pub get
       - name: Static analysis
