@@ -29,7 +29,7 @@ class _CalendarState extends ConsumerState<CalendarScreen> {
       child: SafeArea(
         child: entries.when(
           loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (_, __) => const Center(child: Text('Something went wrong.')),
+          error: (_, _) => const Center(child: Text('Something went wrong.')),
           data: (all) => ListView(
             padding: const EdgeInsets.all(20),
             children: [

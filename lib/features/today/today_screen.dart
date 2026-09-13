@@ -24,7 +24,7 @@ class TodayScreen extends ConsumerWidget {
       child: SafeArea(
         child: entry.when(
           loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (_, __) => const Center(child: Text('Something went wrong.')),
+          error: (_, _) => const Center(child: Text('Something went wrong.')),
           data: (value) => _TodayBody(date: date, entry: value),
         ),
       ),

@@ -21,7 +21,7 @@ class HistoryScreen extends ConsumerWidget {
       child: SafeArea(
         child: entries.when(
           loading: () => const Center(child: CupertinoActivityIndicator()),
-          error: (_, __) => const Center(child: Text('Something went wrong.')),
+          error: (_, _) => const Center(child: Text('Something went wrong.')),
           data: (items) {
             if (items.isEmpty) {
               return const Center(
